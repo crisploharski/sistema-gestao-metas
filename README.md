@@ -33,5 +33,3 @@ streamlit run app.py
 - Streamlit
 - SQLite
 - Pandas
-
-ola
