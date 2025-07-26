@@ -353,83 +353,366 @@ def main():
     with tab4:
         st.subheader("Diagnóstico de Metas")
         
+        # Seleção do tipo de diagnóstico
+        diagnostic_type = st.selectbox(
+            "Tipo de Diagnóstico:",
+            ["Análise Geral", "Diagnóstico Interativo", "Análise Individual de Meta"]
+        )
+        
         try:
             df = gestor.get_all_metas()
             
             if not df.empty:
-                # Análise geral
-                st.markdown("### 📊 Análise Geral")
-                
-                col1, col2, col3 = st.columns(3)
-                
-                with col1:
-                    # Distribuição por status
-                    status_counts = df['status'].value_counts()
-                    st.markdown("**Distribuição por Status:**")
-                    for status, count in status_counts.items():
-                        percentage = (count / len(df)) * 100
-                        st.write(f"• {status}: {count} ({percentage:.1f}%)")
-                
-                with col2:
-                    # Distribuição por departamento
-                    dept_counts = df['department'].value_counts()
-                    st.markdown("**Distribuição por Departamento:**")
-                    for dept, count in dept_counts.items():
-                        percentage = (count / len(df)) * 100
-                        st.write(f"• {dept}: {count} ({percentage:.1f}%)")
-                
-                with col3:
-                    # Estatísticas de progresso
-                    avg_progress = df['progress'].mean()
-                    min_progress = df['progress'].min()
-                    max_progress = df['progress'].max()
+                if diagnostic_type == "Análise Geral":
+                    # Análise geral (código existente)
+                    st.markdown("### 📊 Análise Geral")
                     
-                    st.markdown("**Estatísticas de Progresso:**")
-                    st.write(f"• Média: {avg_progress:.1f}%")
-                    st.write(f"• Mínimo: {min_progress}%")
-                    st.write(f"• Máximo: {max_progress}%")
-                
-                st.markdown("---")
-                
-                # Metas críticas
-                st.markdown("### ⚠️ Metas que Precisam de Atenção")
-                
-                metas_criticas = df[
-                    (df['status'].isin(['Em Andamento', 'Atrasada'])) & 
-                    (df['progress'] < 50)
-                ]
-                
-                if not metas_criticas.empty:
-                    for _, meta in metas_criticas.iterrows():
-                        with st.expander(f"🔴 {meta['employee_name']} - {meta['goal_description'][:50]}..."):
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                st.write(f"**Funcionário:** {meta['employee_name']}")
-                                st.write(f"**Departamento:** {meta['department']}")
-                                st.write(f"**Status:** {meta['status']}")
-                            with col2:
-                                st.write(f"**Progresso:** {meta['progress']}%")
-                                st.write(f"**Data Início:** {meta['start_date']}")
-                                st.write(f"**Data Fim:** {meta['end_date']}")
+                    col1, col2, col3 = st.columns(3)
+                    
+                    with col1:
+                        # Distribuição por status
+                        status_counts = df['status'].value_counts()
+                        st.markdown("**Distribuição por Status:**")
+                        for status, count in status_counts.items():
+                            percentage = (count / len(df)) * 100
+                            st.write(f"• {status}: {count} ({percentage:.1f}%)")
+                    
+                    with col2:
+                        # Distribuição por departamento
+                        dept_counts = df['department'].value_counts()
+                        st.markdown("**Distribuição por Departamento:**")
+                        for dept, count in dept_counts.items():
+                            percentage = (count / len(df)) * 100
+                            st.write(f"• {dept}: {count} ({percentage:.1f}%)")
+                    
+                    with col3:
+                        # Estatísticas de progresso
+                        avg_progress = df['progress'].mean()
+                        min_progress = df['progress'].min()
+                        max_progress = df['progress'].max()
+                        
+                        st.markdown("**Estatísticas de Progresso:**")
+                        st.write(f"• Média: {avg_progress:.1f}%")
+                        st.write(f"• Mínimo: {min_progress}%")
+                        st.write(f"• Máximo: {max_progress}%")
+                    
+                    st.markdown("---")
+                    
+                    # Metas críticas
+                    st.markdown("### ⚠️ Metas que Precisam de Atenção")
+                    
+                    metas_criticas = df[
+                        (df['status'].isin(['Em Andamento', 'Atrasada'])) & 
+                        (df['progress'] < 50)
+                    ]
+                    
+                    if not metas_criticas.empty:
+                        for _, meta in metas_criticas.iterrows():
+                            with st.expander(f"🔴 {meta['employee_name']} - {meta['goal_description'][:50]}..."):
+                                col1, col2 = st.columns(2)
+                                with col1:
+                                    st.write(f"**Funcionário:** {meta['employee_name']}")
+                                    st.write(f"**Departamento:** {meta['department']}")
+                                    st.write(f"**Status:** {meta['status']}")
+                                with col2:
+                                    st.write(f"**Progresso:** {meta['progress']}%")
+                                    st.write(f"**Data Início:** {meta['start_date']}")
+                                    st.write(f"**Data Fim:** {meta['end_date']}")
+                                
+                                # Diagnóstico automático
+                                if meta['progress'] < 25:
+                                    st.warning("🚨 **Diagnóstico:** Meta com progresso muito baixo. Recomenda-se revisão urgente.")
+                                elif meta['progress'] < 50:
+                                    st.info("⚡ **Diagnóstico:** Meta precisando de aceleração para atingir objetivo.")
+                    else:
+                        st.success("✅ Todas as metas estão com progresso satisfatório!")
+                    
+                    # Metas de destaque
+                    st.markdown("### 🌟 Metas de Destaque")
+                    metas_destaque = df[df['progress'] >= 80]
+                    
+                    if not metas_destaque.empty:
+                        for _, meta in metas_destaque.iterrows():
+                            st.success(f"🎯 {meta['employee_name']} - {meta['goal_description'][:50]}... ({meta['progress']}%)")
+                    else:
+                        st.info("Nenhuma meta com progresso acima de 80% encontrada.")
+
+                elif diagnostic_type == "Diagnóstico Interativo":
+                    st.markdown("### 🔍 Diagnóstico Interativo")
+                    st.markdown("Responda às perguntas abaixo para obter um diagnóstico personalizado das metas:")
+                    
+                    with st.form("diagnostic_form"):
+                        st.markdown("#### 1. Contexto Organizacional")
+                        
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            recursos_adequados = st.radio(
+                                "Os funcionários têm recursos adequados para atingir suas metas?",
+                                ["Sim, completamente", "Parcialmente", "Não, faltam recursos", "Não sei avaliar"]
+                            )
                             
-                            # Diagnóstico automático
-                            if meta['progress'] < 25:
-                                st.warning("🚨 **Diagnóstico:** Meta com progresso muito baixo. Recomenda-se revisão urgente.")
-                            elif meta['progress'] < 50:
-                                st.info("⚡ **Diagnóstico:** Meta precisando de aceleração para atingir objetivo.")
-                else:
-                    st.success("✅ Todas as metas estão com progresso satisfatório!")
-                
-                # Metas de destaque
-                st.markdown("### 🌟 Metas de Destaque")
-                metas_destaque = df[df['progress'] >= 80]
-                
-                if not metas_destaque.empty:
-                    for _, meta in metas_destaque.iterrows():
-                        st.success(f"🎯 {meta['employee_name']} - {meta['goal_description'][:50]}... ({meta['progress']}%)")
-                else:
-                    st.info("Nenhuma meta com progresso acima de 80% encontrada.")
+                            comunicacao_clara = st.radio(
+                                "As metas foram comunicadas de forma clara?",
+                                ["Sim, muito clara", "Razoavelmente clara", "Pouco clara", "Confusa"]
+                            )
+                            
+                            prazo_realista = st.radio(
+                                "Os prazos estabelecidos são realistas?",
+                                ["Sim, adequados", "Um pouco apertados", "Muito apertados", "Impossíveis"]
+                            )
+                        
+                        with col2:
+                            apoio_gestao = st.radio(
+                                "Há apoio suficiente da gestão?",
+                                ["Sim, total apoio", "Apoio moderado", "Pouco apoio", "Sem apoio"]
+                            )
+                            
+                            treinamento = st.radio(
+                                "Os funcionários receberam treinamento adequado?",
+                                ["Sim, completo", "Parcial", "Mínimo", "Nenhum"]
+                            )
+                            
+                            motivacao_equipe = st.radio(
+                                "Como está a motivação da equipe?",
+                                ["Muito alta", "Alta", "Média", "Baixa", "Muito baixa"]
+                            )
+                        
+                        st.markdown("#### 2. Obstáculos e Desafios")
+                        
+                        col3, col4 = st.columns(2)
+                        with col3:
+                            principais_obstaculos = st.multiselect(
+                                "Quais são os principais obstáculos?",
+                                ["Falta de tempo", "Recursos insuficientes", "Falta de conhecimento técnico", 
+                                 "Problemas de comunicação", "Mudanças de prioridades", "Sobrecarga de trabalho",
+                                 "Falta de apoio da gestão", "Problemas externos", "Outros"]
+                            )
+                            
+                            frequencia_revisao = st.radio(
+                                "Com que frequência as metas são revisadas?",
+                                ["Semanalmente", "Quinzenalmente", "Mensalmente", "Trimestralmente", "Raramente"]
+                            )
+                        
+                        with col4:
+                            feedback_regular = st.radio(
+                                "Há feedback regular sobre o progresso?",
+                                ["Sim, constante", "Ocasionalmente", "Raramente", "Nunca"]
+                            )
+                            
+                            ferramentas_adequadas = st.radio(
+                                "As ferramentas de trabalho são adequadas?",
+                                ["Sim, excelentes", "Adequadas", "Básicas", "Inadequadas"]
+                            )
+                        
+                        st.markdown("#### 3. Expectativas e Melhorias")
+                        
+                        areas_melhoria = st.multiselect(
+                            "Que áreas precisam de melhoria?",
+                            ["Planejamento de metas", "Comunicação", "Recursos e ferramentas", 
+                             "Treinamento", "Acompanhamento", "Motivação da equipe", 
+                             "Processos internos", "Suporte técnico"]
+                        )
+                        
+                        comentarios_adicionais = st.text_area(
+                            "Comentários ou observações adicionais:",
+                            placeholder="Descreva qualquer situação específica ou sugestão..."
+                        )
+                        
+                        submit_diagnostic = st.form_submit_button("🔍 Gerar Diagnóstico")
+                        
+                        if submit_diagnostic:
+                            # Gerar diagnóstico baseado nas respostas
+                            st.markdown("---")
+                            st.markdown("## 📋 Resultado do Diagnóstico")
+                            
+                            # Análise de recursos
+                            if recursos_adequados in ["Não, faltam recursos", "Parcialmente"]:
+                                st.warning("⚠️ **Recursos:** Identificada deficiência de recursos que pode impactar o cumprimento das metas.")
+                                st.markdown("**Recomendação:** Revisar e alocar recursos adicionais ou redistribuir cargas de trabalho.")
+                            
+                            # Análise de comunicação
+                            if comunicacao_clara in ["Pouco clara", "Confusa"]:
+                                st.error("🚨 **Comunicação:** Problemas na clareza da comunicação das metas.")
+                                st.markdown("**Recomendação:** Reorganizar reuniões de alinhamento e documentar metas de forma mais clara.")
+                            
+                            # Análise de prazos
+                            if prazo_realista in ["Muito apertados", "Impossíveis"]:
+                                st.error("🚨 **Prazos:** Prazos inadequados podem levar ao fracasso das metas.")
+                                st.markdown("**Recomendação:** Revisar cronograma e ajustar prazos de forma realista.")
+                            
+                            # Análise de apoio
+                            if apoio_gestao in ["Pouco apoio", "Sem apoio"]:
+                                st.error("🚨 **Gestão:** Falta de apoio da gestão é crítica para o sucesso.")
+                                st.markdown("**Recomendação:** Engajar liderança e estabelecer canais de suporte.")
+                            
+                            # Análise de motivação
+                            if motivacao_equipe in ["Baixa", "Muito baixa"]:
+                                st.warning("⚠️ **Motivação:** Baixa motivação da equipe pode comprometer resultados.")
+                                st.markdown("**Recomendação:** Implementar programas de motivação e reconhecimento.")
+                            
+                            # Análise de obstáculos
+                            if principais_obstaculos:
+                                st.info(f"📌 **Obstáculos Identificados:** {', '.join(principais_obstaculos)}")
+                                st.markdown("**Recomendação:** Criar plano de ação específico para cada obstáculo identificado.")
+                            
+                            # Análise de frequência de revisão
+                            if frequencia_revisao in ["Raramente"]:
+                                st.warning("⚠️ **Acompanhamento:** Baixa frequência de revisão pode levar à perda de controle.")
+                                st.markdown("**Recomendação:** Estabelecer ciclos regulares de revisão (pelo menos mensais).")
+                            
+                            # Score geral
+                            score_pontos = 0
+                            total_pontos = 6
+                            
+                            if recursos_adequados == "Sim, completamente": score_pontos += 1
+                            if comunicacao_clara == "Sim, muito clara": score_pontos += 1
+                            if prazo_realista == "Sim, adequados": score_pontos += 1
+                            if apoio_gestao == "Sim, total apoio": score_pontos += 1
+                            if treinamento == "Sim, completo": score_pontos += 1
+                            if motivacao_equipe in ["Muito alta", "Alta"]: score_pontos += 1
+                            
+                            score_percentual = (score_pontos / total_pontos) * 100
+                            
+                            st.markdown("### 🎯 Score de Saúde das Metas")
+                            st.progress(score_percentual / 100)
+                            st.write(f"**Score:** {score_percentual:.0f}% ({score_pontos}/{total_pontos} pontos)")
+                            
+                            if score_percentual >= 80:
+                                st.success("🌟 **Excelente!** Ambiente muito favorável ao cumprimento das metas.")
+                            elif score_percentual >= 60:
+                                st.info("👍 **Bom!** Algumas melhorias podem otimizar os resultados.")
+                            elif score_percentual >= 40:
+                                st.warning("⚠️ **Atenção!** Várias áreas precisam de melhoria urgente.")
+                            else:
+                                st.error("🚨 **Crítico!** Ambiente desfavorável. Revisão completa necessária.")
+                            
+                            if comentarios_adicionais:
+                                st.markdown("### 💬 Observações Registradas")
+                                st.info(comentarios_adicionais)
+
+                elif diagnostic_type == "Análise Individual de Meta":
+                    st.markdown("### 🎯 Análise Individual de Meta")
                     
+                    # Seleção da meta
+                    meta_options = [f"ID {row['id']} - {row['employee_name']} - {row['goal_description'][:50]}..." 
+                                   for _, row in df.iterrows()]
+                    selected_meta = st.selectbox("Selecione a meta para análise detalhada:", meta_options)
+                    
+                    if selected_meta:
+                        meta_id = int(selected_meta.split(" ")[1])
+                        meta_data = df[df['id'] == meta_id].iloc[0]
+                        
+                        col1, col2 = st.columns(2)
+                        
+                        with col1:
+                            st.markdown("#### 📊 Informações da Meta")
+                            st.write(f"**Funcionário:** {meta_data['employee_name']}")
+                            st.write(f"**Departamento:** {meta_data['department']}")
+                            st.write(f"**Descrição:** {meta_data['goal_description']}")
+                            st.write(f"**Status:** {meta_data['status']}")
+                            st.write(f"**Progresso:** {meta_data['progress']}%")
+                        
+                        with col2:
+                            st.markdown("#### 📅 Cronograma")
+                            st.write(f"**Data Início:** {meta_data['start_date']}")
+                            st.write(f"**Data Fim:** {meta_data['end_date']}")
+                            
+                            # Calcular dias restantes
+                            from datetime import datetime
+                            try:
+                                end_date = datetime.strptime(meta_data['end_date'], '%Y-%m-%d')
+                                today = datetime.now()
+                                days_remaining = (end_date - today).days
+                                
+                                if days_remaining > 0:
+                                    st.write(f"**Dias Restantes:** {days_remaining}")
+                                elif days_remaining == 0:
+                                    st.write("**Prazo:** Hoje!")
+                                else:
+                                    st.write(f"**Atrasada:** {abs(days_remaining)} dias")
+                            except:
+                                st.write("**Dias Restantes:** Não calculado")
+                        
+                        # Análise específica da meta
+                        st.markdown("#### 🔍 Análise Detalhada")
+                        
+                        progress = meta_data['progress']
+                        status = meta_data['status']
+                        
+                        if status == 'Concluída':
+                            st.success("🎉 **Meta Concluída!** Parabéns pelo sucesso!")
+                        elif status == 'Não Concluída':
+                            st.error("❌ **Meta Não Concluída** - Necessária análise para próximas ações.")
+                        elif status == 'Atrasada':
+                            st.error(f"⏰ **Meta Atrasada** - Progresso atual: {progress}%")
+                            if progress < 50:
+                                st.warning("🚨 Progresso baixo para meta atrasada. Intervenção urgente necessária.")
+                        elif status == 'Em Andamento':
+                            if progress >= 80:
+                                st.success(f"🚀 **Excelente progresso!** {progress}% - Meta no caminho certo.")
+                            elif progress >= 60:
+                                st.info(f"👍 **Bom progresso!** {progress}% - Manter o ritmo.")
+                            elif progress >= 40:
+                                st.warning(f"⚠️ **Progresso moderado** {progress}% - Pode precisar de aceleração.")
+                            else:
+                                st.error(f"🚨 **Progresso baixo** {progress}% - Revisão urgente necessária.")
+                        
+                        # Recomendações específicas
+                        st.markdown("#### 💡 Recomendações")
+                        
+                        if progress < 25:
+                            st.markdown("""
+                            - 🔄 **Revisar estratégia** - A abordagem atual pode não estar funcionando
+                            - 🤝 **Buscar suporte** - Solicitar ajuda da gestão ou colegas
+                            - 📚 **Capacitação** - Considerar treinamento adicional
+                            - ⏰ **Reagendamento** - Avaliar se o prazo é realista
+                            """)
+                        elif progress < 50:
+                            st.markdown("""
+                            - ⚡ **Acelerar ritmo** - Intensificar esforços nas atividades principais
+                            - 🎯 **Focar prioridades** - Concentrar em tarefas de maior impacto
+                            - 📞 **Comunicação** - Manter gestão informada sobre desafios
+                            - 🔧 **Otimizar processos** - Buscar eficiências operacionais
+                            """)
+                        elif progress < 80:
+                            st.markdown("""
+                            - 📈 **Manter progresso** - Continuar com a estratégia atual
+                            - 🔍 **Monitorar de perto** - Acompanhar indicadores regularmente
+                            - 🚀 **Últimos 20%** - Preparar para o sprint final
+                            """)
+                        else:
+                            st.markdown("""
+                            - 🎯 **Finalizar com qualidade** - Foco na entrega final
+                            - 📝 **Documentar aprendizados** - Registrar boas práticas
+                            - 🏆 **Celebrar conquista** - Reconhecer o bom trabalho
+                            """)
+                        
+                        # Formulário para adicionar observações
+                        with st.form("individual_observations"):
+                            st.markdown("#### 📝 Adicionar Observações")
+                            new_diagnosis = st.text_area(
+                                "Diagnóstico:",
+                                value=meta_data.get('diagnosis', '') or '',
+                                placeholder="Adicione observações sobre o diagnóstico desta meta..."
+                            )
+                            new_suggestions = st.text_area(
+                                "Sugestões:",
+                                value=meta_data.get('suggestions', '') or '',
+                                placeholder="Adicione sugestões para melhoria..."
+                            )
+                            
+                            if st.form_submit_button("💾 Salvar Observações"):
+                                try:
+                                    gestor.update_meta(
+                                        meta_id,
+                                        diagnosis=new_diagnosis,
+                                        suggestions=new_suggestions
+                                    )
+                                    st.success("Observações salvas com sucesso!")
+                                    st.rerun()
+                                except Exception as e:
+                                    st.error(f"Erro ao salvar observações: {e}")
+
             else:
                 st.info("Nenhuma meta encontrada para diagnóstico.")
                 
