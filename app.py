@@ -802,72 +802,78 @@ def main():
                                     final_diagnosis = new_diagnosis + "\n\n" + "DIAGNÓSTICO AUTOMÁTICO:\n• Nenhum problema crítico identificado. Meta apresenta boas condições de execução." if new_diagnosis else "DIAGNÓSTICO AUTOMÁTICO:\n• Nenhum problema crítico identificado. Meta apresenta boas condições de execução."
                                     final_suggestions = new_suggestions + "\n\n" + "SUGESTÕES AUTOMÁTICAS:\n• Continue com a estratégia atual e mantenha o acompanhamento regular." if new_suggestions else "SUGESTÕES AUTOMÁTICAS:\n• Continue com a estratégia atual e mantenha o acompanhamento regular."
                                 
+                                # Salvar no banco de dados
                                 try:
                                     gestor.update_meta(
                                         meta_id,
                                         diagnosis=final_diagnosis,
                                         suggestions=final_suggestions
                                     )
-                                    
                                     st.success("✅ Diagnóstico individual gerado e salvo com sucesso!")
-                                    
-                                    # Exibir resultado do diagnóstico
-                                    st.markdown("---")
-                                    st.markdown("### 📋 Resultado do Diagnóstico Individual")
-                                    
-                                    if diagnoses:
-                                        st.markdown("#### 🚨 Problemas Identificados:")
-                                        for i, diagnosis in enumerate(diagnoses):
-                                            if "irrealista" in diagnosis.lower():
-                                                st.error(f"🎯 {diagnosis}")
-                                            elif "falta de recursos" in diagnosis.lower():
-                                                st.warning(f"🔧 {diagnosis}")
-                                            elif "baixa motivação" in diagnosis.lower():
-                                                st.warning(f"😔 {diagnosis}")
-                                            elif "burnout" in diagnosis.lower():
-                                                st.error(f"😰 {diagnosis}")
-                                            elif "falta de feedback" in diagnosis.lower():
-                                                st.warning(f"📢 {diagnosis}")
-                                            elif "falta de clareza" in diagnosis.lower():
-                                                st.warning(f"❓ {diagnosis}")
-                                            elif "imprevistos" in diagnosis.lower():
-                                                st.info(f"⚡ {diagnosis}")
-                                            elif "imposta" in diagnosis.lower():
-                                                st.warning(f"🤝 {diagnosis}")
-                                            else:
-                                                st.info(f"📌 {diagnosis}")
-                                        
-                                        st.markdown("#### 💡 Ações Recomendadas:")
-                                        for i, suggestion in enumerate(suggestions):
-                                            st.markdown(f"**{i+1}.** {suggestion}")
-                                        
-                                        # Score de risco
-                                        risk_score = len(diagnoses)
-                                        total_questions = 8
-                                        risk_percentage = (risk_score / total_questions) * 100
-                                        
-                                        st.markdown("#### 📊 Nível de Risco da Meta")
-                                        if risk_percentage == 0:
-                                            st.success(f"🟢 **Baixo Risco** - {risk_score}/8 problemas identificados")
-                                            st.info("Meta apresenta condições favoráveis para o sucesso.")
-                                        elif risk_percentage <= 25:
-                                            st.info(f"🟡 **Risco Moderado** - {risk_score}/8 problemas identificados")
-                                            st.warning("Alguns pontos de atenção identificados.")
-                                        elif risk_percentage <= 50:
-                                            st.warning(f"🟠 **Risco Alto** - {risk_score}/8 problemas identificados")
-                                            st.error("Vários fatores podem comprometer o sucesso da meta.")
-                                        else:
-                                            st.error(f"🔴 **Risco Crítico** - {risk_score}/8 problemas identificados")
-                                            st.error("Meta em situação crítica. Intervenção urgente necessária.")
-                                            
-                                    else:
-                                        st.success("🌟 **Excelente!** Nenhum problema crítico identificado.")
-                                        st.info("A meta apresenta boas condições de execução. Continue com a estratégia atual.")
-                                    
-                                    st.rerun()
-                                    
                                 except Exception as e:
                                     st.error(f"Erro ao salvar diagnóstico: {e}")
+                                
+                                # Exibir resultado do diagnóstico imediatamente
+                                st.markdown("---")
+                                st.markdown("### 📋 Resultado do Diagnóstico Individual")
+                                
+                                if diagnoses:
+                                    st.markdown("#### 🚨 Problemas Identificados:")
+                                    for i, diagnosis in enumerate(diagnoses):
+                                        if "irrealista" in diagnosis.lower():
+                                            st.error(f"🎯 {diagnosis}")
+                                        elif "falta de recursos" in diagnosis.lower():
+                                            st.warning(f"🔧 {diagnosis}")
+                                        elif "baixa motivação" in diagnosis.lower():
+                                            st.warning(f"😔 {diagnosis}")
+                                        elif "burnout" in diagnosis.lower():
+                                            st.error(f"😰 {diagnosis}")
+                                        elif "falta de feedback" in diagnosis.lower():
+                                            st.warning(f"📢 {diagnosis}")
+                                        elif "falta de clareza" in diagnosis.lower():
+                                            st.warning(f"❓ {diagnosis}")
+                                        elif "imprevistos" in diagnosis.lower():
+                                            st.info(f"⚡ {diagnosis}")
+                                        elif "imposta" in diagnosis.lower():
+                                            st.warning(f"🤝 {diagnosis}")
+                                        else:
+                                            st.info(f"📌 {diagnosis}")
+                                    
+                                    st.markdown("#### 💡 Ações Recomendadas:")
+                                    for i, suggestion in enumerate(suggestions):
+                                        st.markdown(f"**{i+1}.** {suggestion}")
+                                    
+                                    # Score de risco
+                                    risk_score = len(diagnoses)
+                                    total_questions = 8
+                                    risk_percentage = (risk_score / total_questions) * 100
+                                    
+                                    st.markdown("#### 📊 Nível de Risco da Meta")
+                                    if risk_percentage == 0:
+                                        st.success(f"🟢 **Baixo Risco** - {risk_score}/8 problemas identificados")
+                                        st.info("Meta apresenta condições favoráveis para o sucesso.")
+                                    elif risk_percentage <= 25:
+                                        st.info(f"🟡 **Risco Moderado** - {risk_score}/8 problemas identificados")
+                                        st.warning("Alguns pontos de atenção identificados.")
+                                    elif risk_percentage <= 50:
+                                        st.warning(f"🟠 **Risco Alto** - {risk_score}/8 problemas identificados")
+                                        st.error("Vários fatores podem comprometer o sucesso da meta.")
+                                    else:
+                                        st.error(f"🔴 **Risco Crítico** - {risk_score}/8 problemas identificados")
+                                        st.error("Meta em situação crítica. Intervenção urgente necessária.")
+                                        
+                                else:
+                                    st.success("🌟 **Excelente!** Nenhum problema crítico identificado.")
+                                    st.info("A meta apresenta boas condições de execução. Continue com a estratégia atual.")
+                                
+                                # Exibir diagnóstico e sugestões personalizadas se houver
+                                if new_diagnosis:
+                                    st.markdown("### 💬 Diagnóstico Personalizado")
+                                    st.info(new_diagnosis)
+                                
+                                if new_suggestions:
+                                    st.markdown("### 💡 Sugestões Personalizadas")
+                                    st.info(new_suggestions)
 
             else:
                 st.info("Nenhuma meta encontrada para diagnóstico.")
