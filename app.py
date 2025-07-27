@@ -744,18 +744,6 @@ def main():
                                     key="q8"
                                 )
                             
-                            st.markdown("#### 📝 Observações Adicionais")
-                            new_diagnosis = st.text_area(
-                                "Diagnóstico personalizado:",
-                                value=meta_data.get('diagnosis', '') or '',
-                                placeholder="Adicione observações sobre o diagnóstico desta meta..."
-                            )
-                            new_suggestions = st.text_area(
-                                "Sugestões personalizadas:",
-                                value=meta_data.get('suggestions', '') or '',
-                                placeholder="Adicione sugestões para melhoria..."
-                            )
-                            
                             if st.form_submit_button("🔍 Gerar Diagnóstico Individual"):
                                 # Gerar diagnóstico baseado nas respostas
                                 diagnoses = []
@@ -796,11 +784,11 @@ def main():
                                 
                                 # Compilar diagnóstico final
                                 if diagnoses:
-                                    final_diagnosis = new_diagnosis + "\n\n" + "DIAGNÓSTICO AUTOMÁTICO:\n• " + "\n• ".join(diagnoses) if new_diagnosis else "DIAGNÓSTICO AUTOMÁTICO:\n• " + "\n• ".join(diagnoses)
-                                    final_suggestions = new_suggestions + "\n\n" + "SUGESTÕES AUTOMÁTICAS:\n• " + "\n• ".join(suggestions) if new_suggestions else "SUGESTÕES AUTOMÁTICAS:\n• " + "\n• ".join(suggestions)
+                                    final_diagnosis = "DIAGNÓSTICO AUTOMÁTICO:\n• " + "\n• ".join(diagnoses)
+                                    final_suggestions = "SUGESTÕES AUTOMÁTICAS:\n• " + "\n• ".join(suggestions)
                                 else:
-                                    final_diagnosis = new_diagnosis + "\n\n" + "DIAGNÓSTICO AUTOMÁTICO:\n• Nenhum problema crítico identificado. Meta apresenta boas condições de execução." if new_diagnosis else "DIAGNÓSTICO AUTOMÁTICO:\n• Nenhum problema crítico identificado. Meta apresenta boas condições de execução."
-                                    final_suggestions = new_suggestions + "\n\n" + "SUGESTÕES AUTOMÁTICAS:\n• Continue com a estratégia atual e mantenha o acompanhamento regular." if new_suggestions else "SUGESTÕES AUTOMÁTICAS:\n• Continue com a estratégia atual e mantenha o acompanhamento regular."
+                                    final_diagnosis = "DIAGNÓSTICO AUTOMÁTICO:\n• Nenhum problema crítico identificado. Meta apresenta boas condições de execução."
+                                    final_suggestions = "SUGESTÕES AUTOMÁTICAS:\n• Continue com a estratégia atual e mantenha o acompanhamento regular."
                                 
                                 # Salvar no banco de dados
                                 try:
@@ -865,15 +853,6 @@ def main():
                                 else:
                                     st.success("🌟 **Excelente!** Nenhum problema crítico identificado.")
                                     st.info("A meta apresenta boas condições de execução. Continue com a estratégia atual.")
-                                
-                                # Exibir diagnóstico e sugestões personalizadas se houver
-                                if new_diagnosis:
-                                    st.markdown("### 💬 Diagnóstico Personalizado")
-                                    st.info(new_diagnosis)
-                                
-                                if new_suggestions:
-                                    st.markdown("### 💡 Sugestões Personalizadas")
-                                    st.info(new_suggestions)
 
             else:
                 st.info("Nenhuma meta encontrada para diagnóstico.")
