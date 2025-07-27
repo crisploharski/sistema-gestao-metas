@@ -689,29 +689,185 @@ def main():
                         
                         # Formulário para adicionar observações
                         with st.form("individual_observations"):
-                            st.markdown("#### 📝 Adicionar Observações")
+                            st.markdown("#### 📝 Diagnóstico Individual da Meta")
+                            st.markdown("Responda às perguntas abaixo para gerar um diagnóstico específico desta meta:")
+                            
+                            col_q1, col_q2 = st.columns(2)
+                            
+                            with col_q1:
+                                q1 = st.radio(
+                                    "A meta foi percebida como realista e possível de atingir?",
+                                    ["Sim", "Não"],
+                                    key="q1"
+                                )
+                                
+                                q2 = st.radio(
+                                    "Os recursos disponíveis foram suficientes para a execução da meta?",
+                                    ["Sim", "Não"],
+                                    key="q2"
+                                )
+                                
+                                q3 = st.radio(
+                                    "Há sinais de engajamento ou motivação ao longo do período?",
+                                    ["Sim", "Não"],
+                                    key="q3"
+                                )
+                                
+                                q4 = st.radio(
+                                    "Houve sinais de cansaço excessivo ou sobrecarga?",
+                                    ["Sim", "Não"],
+                                    key="q4"
+                                )
+                            
+                            with col_q2:
+                                q5 = st.radio(
+                                    "O acompanhamento e o feedback foram oferecidos com regularidade?",
+                                    ["Sim", "Não"],
+                                    key="q5"
+                                )
+                                
+                                q6 = st.radio(
+                                    "As expectativas e objetivos da meta estavam claros desde o início?",
+                                    ["Sim", "Não"],
+                                    key="q6"
+                                )
+                                
+                                q7 = st.radio(
+                                    "Houve mudanças ou imprevistos no período da meta?",
+                                    ["Sim", "Não"],
+                                    key="q7"
+                                )
+                                
+                                q8 = st.radio(
+                                    "O funcionário participou da definição da meta?",
+                                    ["Sim", "Não"],
+                                    key="q8"
+                                )
+                            
+                            st.markdown("#### 📝 Observações Adicionais")
                             new_diagnosis = st.text_area(
-                                "Diagnóstico:",
+                                "Diagnóstico personalizado:",
                                 value=meta_data.get('diagnosis', '') or '',
                                 placeholder="Adicione observações sobre o diagnóstico desta meta..."
                             )
                             new_suggestions = st.text_area(
-                                "Sugestões:",
+                                "Sugestões personalizadas:",
                                 value=meta_data.get('suggestions', '') or '',
                                 placeholder="Adicione sugestões para melhoria..."
                             )
                             
-                            if st.form_submit_button("💾 Salvar Observações"):
+                            if st.form_submit_button("🔍 Gerar Diagnóstico Individual"):
+                                # Gerar diagnóstico baseado nas respostas
+                                diagnoses = []
+                                suggestions = []
+                                
+                                # Análise das respostas
+                                if q1 == 'Não':
+                                    diagnoses.append("Meta pode ser irrealista")
+                                    suggestions.append("Reavalie a meta junto ao funcionário para garantir que esteja adequada ao tempo e ao escopo.")
+                                
+                                if q2 == 'Não':
+                                    diagnoses.append("Falta de recursos")
+                                    suggestions.append("Verifique se há necessidade de suporte adicional, como ferramentas, tempo ou equipe.")
+                                
+                                if q3 == 'Não':
+                                    diagnoses.append("Baixa motivação")
+                                    suggestions.append("Agende uma conversa para entender o que pode estar afetando a motivação e como apoiar melhor.")
+                                
+                                if q4 == 'Sim':
+                                    diagnoses.append("Possível burnout")
+                                    suggestions.append("Considere redistribuir tarefas ou revisar prazos para evitar esgotamento.")
+                                
+                                if q5 == 'Não':
+                                    diagnoses.append("Falta de feedback")
+                                    suggestions.append("Estabeleça checkpoints periódicos para fortalecer o alinhamento e o suporte.")
+                                
+                                if q6 == 'Não':
+                                    diagnoses.append("Falta de clareza")
+                                    suggestions.append("Reforce os critérios de sucesso e prazos de forma objetiva com o funcionário.")
+                                
+                                if q7 == 'Sim':
+                                    diagnoses.append("Ocorreram imprevistos")
+                                    suggestions.append("Considere adaptar prazos ou prioridades diante de imprevistos relevantes.")
+                                
+                                if q8 == 'Não':
+                                    diagnoses.append("Meta imposta sem participação")
+                                    suggestions.append("Envolva o funcionário na construção das metas para aumentar clareza e comprometimento.")
+                                
+                                # Compilar diagnóstico final
+                                if diagnoses:
+                                    final_diagnosis = new_diagnosis + "\n\n" + "DIAGNÓSTICO AUTOMÁTICO:\n• " + "\n• ".join(diagnoses) if new_diagnosis else "DIAGNÓSTICO AUTOMÁTICO:\n• " + "\n• ".join(diagnoses)
+                                    final_suggestions = new_suggestions + "\n\n" + "SUGESTÕES AUTOMÁTICAS:\n• " + "\n• ".join(suggestions) if new_suggestions else "SUGESTÕES AUTOMÁTICAS:\n• " + "\n• ".join(suggestions)
+                                else:
+                                    final_diagnosis = new_diagnosis + "\n\n" + "DIAGNÓSTICO AUTOMÁTICO:\n• Nenhum problema crítico identificado. Meta apresenta boas condições de execução." if new_diagnosis else "DIAGNÓSTICO AUTOMÁTICO:\n• Nenhum problema crítico identificado. Meta apresenta boas condições de execução."
+                                    final_suggestions = new_suggestions + "\n\n" + "SUGESTÕES AUTOMÁTICAS:\n• Continue com a estratégia atual e mantenha o acompanhamento regular." if new_suggestions else "SUGESTÕES AUTOMÁTICAS:\n• Continue com a estratégia atual e mantenha o acompanhamento regular."
+                                
                                 try:
                                     gestor.update_meta(
                                         meta_id,
-                                        diagnosis=new_diagnosis,
-                                        suggestions=new_suggestions
+                                        diagnosis=final_diagnosis,
+                                        suggestions=final_suggestions
                                     )
-                                    st.success("Observações salvas com sucesso!")
+                                    
+                                    st.success("✅ Diagnóstico individual gerado e salvo com sucesso!")
+                                    
+                                    # Exibir resultado do diagnóstico
+                                    st.markdown("---")
+                                    st.markdown("### 📋 Resultado do Diagnóstico Individual")
+                                    
+                                    if diagnoses:
+                                        st.markdown("#### 🚨 Problemas Identificados:")
+                                        for i, diagnosis in enumerate(diagnoses):
+                                            if "irrealista" in diagnosis.lower():
+                                                st.error(f"🎯 {diagnosis}")
+                                            elif "falta de recursos" in diagnosis.lower():
+                                                st.warning(f"🔧 {diagnosis}")
+                                            elif "baixa motivação" in diagnosis.lower():
+                                                st.warning(f"😔 {diagnosis}")
+                                            elif "burnout" in diagnosis.lower():
+                                                st.error(f"😰 {diagnosis}")
+                                            elif "falta de feedback" in diagnosis.lower():
+                                                st.warning(f"📢 {diagnosis}")
+                                            elif "falta de clareza" in diagnosis.lower():
+                                                st.warning(f"❓ {diagnosis}")
+                                            elif "imprevistos" in diagnosis.lower():
+                                                st.info(f"⚡ {diagnosis}")
+                                            elif "imposta" in diagnosis.lower():
+                                                st.warning(f"🤝 {diagnosis}")
+                                            else:
+                                                st.info(f"📌 {diagnosis}")
+                                        
+                                        st.markdown("#### 💡 Ações Recomendadas:")
+                                        for i, suggestion in enumerate(suggestions):
+                                            st.markdown(f"**{i+1}.** {suggestion}")
+                                        
+                                        # Score de risco
+                                        risk_score = len(diagnoses)
+                                        total_questions = 8
+                                        risk_percentage = (risk_score / total_questions) * 100
+                                        
+                                        st.markdown("#### 📊 Nível de Risco da Meta")
+                                        if risk_percentage == 0:
+                                            st.success(f"🟢 **Baixo Risco** - {risk_score}/8 problemas identificados")
+                                            st.info("Meta apresenta condições favoráveis para o sucesso.")
+                                        elif risk_percentage <= 25:
+                                            st.info(f"🟡 **Risco Moderado** - {risk_score}/8 problemas identificados")
+                                            st.warning("Alguns pontos de atenção identificados.")
+                                        elif risk_percentage <= 50:
+                                            st.warning(f"🟠 **Risco Alto** - {risk_score}/8 problemas identificados")
+                                            st.error("Vários fatores podem comprometer o sucesso da meta.")
+                                        else:
+                                            st.error(f"🔴 **Risco Crítico** - {risk_score}/8 problemas identificados")
+                                            st.error("Meta em situação crítica. Intervenção urgente necessária.")
+                                            
+                                    else:
+                                        st.success("🌟 **Excelente!** Nenhum problema crítico identificado.")
+                                        st.info("A meta apresenta boas condições de execução. Continue com a estratégia atual.")
+                                    
                                     st.rerun()
+                                    
                                 except Exception as e:
-                                    st.error(f"Erro ao salvar observações: {e}")
+                                    st.error(f"Erro ao salvar diagnóstico: {e}")
 
             else:
                 st.info("Nenhuma meta encontrada para diagnóstico.")
