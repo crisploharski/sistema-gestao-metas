@@ -1,6 +1,6 @@
-# Sistema de Gestão de Metas
+# Sistema de Gestão de Metas Individual
 
-# 🌊 Sistema de Gestão de Metas
+# 🌊 Sistema de Gestão de Metas Individual
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://sua-url-streamlit.streamlit.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
