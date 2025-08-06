@@ -10,7 +10,7 @@
 
 ## 🎯 **Sobre o Projeto**
 
-Este sistema foi desenvolvido como uma **ferramenta de apoio gratuita** para auxiliar organizações e indivíduos no gerenciamento de metas. O projeto combina simplicidade de uso com funcionalidades avançadas de diagnóstico e análise.
+Este sistema foi desenvolvido como uma **ferramenta de apoio gratuita** para auxiliar organizações e indivíduos no gerenciamento de metas indivduais. O projeto combina simplicidade de uso com funcionalidades avançadas de diagnóstico e análise.
 
 ### ✨ **Principais Funcionalidades**
 
