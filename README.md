@@ -26,7 +26,7 @@ Este sistema foi desenvolvido como uma **ferramenta de apoio gratuita** para aux
 
 ## 🚀 **Demo Online**
 
-**Teste a aplicação:** [Sistema de Gestão de Metas](https://sua-url-streamlit.streamlit.app)
+**Teste a aplicação:** [Sistema de Gestão de Metas](https://sistema-gestao-metas-3yijkqtolzlrappmfenajnf.streamlit.app/)
 
 *Não é necessário cadastro - experimente todas as funcionalidades gratuitamente!*
 
